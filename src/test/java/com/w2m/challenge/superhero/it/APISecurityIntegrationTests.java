@@ -39,8 +39,8 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 	public void shouldReturnLoginTokenWithRightCredentials() throws Exception {
 		StringBuilder credentialsBuilder = new StringBuilder();
 		credentialsBuilder.append("{ \n");
-		credentialsBuilder.append("    'username': 'pepito', \n");
-		credentialsBuilder.append("    'password': 'm3g4h4x0r' \n");
+		credentialsBuilder.append("    \"username\": \"pepito\", \n");
+		credentialsBuilder.append("    \"password\": \"m3g4h4x0r\" \n");
 		credentialsBuilder.append("}");
 		MvcResult result = mockMvc
 			.perform(post("/login")

@@ -17,7 +17,7 @@ public interface AuthTokenTestHelper {
 		AuthTokenDTO responseDTO = om.readValue(responseString, AuthTokenDTO.class);
 		JWSObject parsedJWT = JWSObject.parse(responseDTO.getToken());
 		return Optional.ofNullable(parsedJWT.getHeader())
-				.map(header -> header.getType() == JOSEObjectType.JWT)
+				.map(header -> header.getType().equals(JOSEObjectType.JWT))
 				.orElse(false);
 	}
 }
