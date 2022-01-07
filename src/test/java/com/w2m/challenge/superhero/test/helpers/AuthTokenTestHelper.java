@@ -13,11 +13,20 @@ import com.w2m.challenge.superhero.dto.AuthTokenDTO;
 public interface AuthTokenTestHelper {
 
 	default boolean isValidJWTLoginResponse(String responseString) throws JsonMappingException, JsonProcessingException, ParseException {
-		ObjectMapper om = new ObjectMapper();
-		AuthTokenDTO responseDTO = om.readValue(responseString, AuthTokenDTO.class);
-		JWSObject parsedJWT = JWSObject.parse(responseDTO.getToken());
+		String token = parseLoginJSONResponseToGetToken(responseString);
+		return isValidJWTString(token);
+	}
+	
+	default boolean isValidJWTString(String token) throws ParseException {
+		JWSObject parsedJWT = JWSObject.parse(token);
 		return Optional.ofNullable(parsedJWT.getHeader())
 				.map(header -> header.getType().equals(JOSEObjectType.JWT))
-				.orElse(false);
+				.orElse(false);		
+	}
+	
+	private String parseLoginJSONResponseToGetToken(String jsonString) throws JsonMappingException, JsonProcessingException, ParseException {
+		ObjectMapper om = new ObjectMapper();
+		AuthTokenDTO responseDTO = om.readValue(jsonString, AuthTokenDTO.class);
+		return responseDTO.getToken();
 	}
 }

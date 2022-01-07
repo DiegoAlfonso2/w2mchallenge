@@ -43,6 +43,6 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 		var user = new User(username, hashedPassword, "ROLE_USER");
 		Mockito.when(userRepository.findByUsernameAndHashedPassword(username, hashedPassword)).thenReturn(Optional.of(user));
 		String resultingToken = serviceUnderTest.authenticate(username, password);
-		assertTrue(isValidJWTLoginResponse(resultingToken));
+		assertTrue(isValidJWTString(resultingToken));
 	}
 }
