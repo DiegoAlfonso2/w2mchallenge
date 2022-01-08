@@ -3,6 +3,8 @@ package com.w2m.challenge.superhero.test.helpers;
 import java.text.ParseException;
 import java.util.Optional;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,13 @@ import com.nimbusds.jose.JWSObject;
 import com.w2m.challenge.superhero.dto.AuthTokenDTO;
 
 public interface AuthTokenTestHelper {
+	
+	String USERNAME = "pepito";
+	String PASSWORD = "m3g4h4x0r";
+	String HASHED_PASSWORD = DigestUtils.sha256Hex(USERNAME + PASSWORD);
+	String ROLE_LIST = "ROLE_USER";
+	String VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcGl0byIsInJvbGVzIjoiUk9MRV9VU0VSIn0.-G8xKxvmDaOknbDjFuu_8__Sx1la5YsufiSn6H2mGD0";
+
 
 	default boolean isValidJWTLoginResponse(String responseString) throws JsonMappingException, JsonProcessingException, ParseException {
 		String token = parseLoginJSONResponseToGetToken(responseString);

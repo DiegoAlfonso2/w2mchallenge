@@ -1,13 +1,10 @@
 package com.w2m.challenge.superhero.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.util.Optional;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,11 +26,6 @@ import com.w2m.challenge.superhero.test.helpers.AuthTokenTestHelper;
 public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 
 	private UserAuthServiceImpl serviceUnderTest;
-	private final String USERNAME = "pepito";
-	private final String PASSWORD = "m3g4h4x0r";
-	private final String HASHED_PASSWORD = DigestUtils.sha256Hex(USERNAME + PASSWORD);
-	private final String ROLE_LIST = "ROLE_USER";
-	private final String VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcGl0byIsInJvbGVzIjoiUk9MRV9VU0VSIn0.-G8xKxvmDaOknbDjFuu_8__Sx1la5YsufiSn6H2mGD0";
 	
 	@Mock
 	UserRepository userRepository;
