@@ -24,6 +24,15 @@ public interface AuthTokenTestHelper {
 				.orElse(false);		
 	}
 	
+	default boolean hasClaim(String token, String claim, String content) throws ParseException {
+		JWSObject parsedJWT = JWSObject.parse(token);
+		return Optional.ofNullable(parsedJWT.getPayload())
+				.map(payload -> payload.toJSONObject())
+				.flatMap(claimsMap -> Optional.ofNullable(claimsMap.get(claim)))
+				.map(value -> value.equals(content))
+				.orElse(false);
+	}
+	
 	private String parseLoginJSONResponseToGetToken(String jsonString) throws JsonMappingException, JsonProcessingException, ParseException {
 		ObjectMapper om = new ObjectMapper();
 		AuthTokenDTO responseDTO = om.readValue(jsonString, AuthTokenDTO.class);

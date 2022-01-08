@@ -45,4 +45,11 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
 		assertTrue(isValidJWTString(resultingToken));
 	}
+	
+	@Test
+	public void shouldReturnRoleWithProperCredentials() throws Exception {
+		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
+		assertTrue(hasClaim(resultingToken, "username", "pepito"));
+		assertTrue(hasClaim(resultingToken, "roles", "ROLE_USER"));
+	}
 }
