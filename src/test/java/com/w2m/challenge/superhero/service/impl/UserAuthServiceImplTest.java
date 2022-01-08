@@ -26,6 +26,9 @@ import com.w2m.challenge.superhero.test.helpers.AuthTokenTestHelper;
 public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 
 	private UserAuthServiceImpl serviceUnderTest;
+	private final String USERNAME = "pepito";
+	private final String PASSWORD = "m3g4h4x0r";
+	private final String HASHED_PASSWORD = DigestUtils.sha256Hex(USERNAME + PASSWORD);
 	
 	@Mock
 	UserRepository userRepository;
@@ -33,16 +36,13 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	@BeforeEach
 	public void setUp() {
 		serviceUnderTest = new UserAuthServiceImpl(userRepository);
+		var user = new User(USERNAME, HASHED_PASSWORD, "ROLE_USER");
+		Mockito.when(userRepository.findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD)).thenReturn(Optional.of(user));
 	}
 
 	@Test
 	public void shouldReturnTokenWithValidCredentials() throws JsonMappingException, JsonProcessingException, ParseException {
-		var username = "pepito";
-		var password = "m3g4h4x0r";
-		var hashedPassword = DigestUtils.sha256Hex(username + password);
-		var user = new User(username, hashedPassword, "ROLE_USER");
-		Mockito.when(userRepository.findByUsernameAndHashedPassword(username, hashedPassword)).thenReturn(Optional.of(user));
-		String resultingToken = serviceUnderTest.authenticate(username, password);
+		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
 		assertTrue(isValidJWTString(resultingToken));
 	}
 }
