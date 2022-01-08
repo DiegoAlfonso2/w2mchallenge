@@ -1,5 +1,7 @@
 package com.w2m.challenge.superhero.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
@@ -48,17 +50,15 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	}
 
 	@Test
-	public void shouldReturnTokenWithValidCredentials() throws JsonMappingException, JsonProcessingException, ParseException {
-		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
-		assertTrue(isValidJWTString(resultingToken));
+	public void shouldDelegateOnUserRepositoryToGetUserDetails() throws JsonMappingException, JsonProcessingException, ParseException {
+		serviceUnderTest.authenticate(USERNAME, PASSWORD);
 		Mockito.verify(userRepository).findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD);
-		Mockito.verify(tokenService).generateTokenFor(USERNAME, ROLE_LIST);
 	}
 	
 	@Test
-	public void shouldReturnRoleWithProperCredentials() throws Exception {
+	public void shouldDelegateOnTokenServiceToGenerateToken() throws Exception {
 		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
-		Mockito.verify(userRepository).findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD);
+		assertEquals(VALID_TOKEN, resultingToken);
 		Mockito.verify(tokenService).generateTokenFor(USERNAME, ROLE_LIST);
 	}
 }

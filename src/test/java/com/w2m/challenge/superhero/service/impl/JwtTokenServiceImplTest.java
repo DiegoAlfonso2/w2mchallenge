@@ -23,6 +23,12 @@ public class JwtTokenServiceImplTest implements AuthTokenTestHelper {
 	public void setUp() {
 		this.serviceUnderTest = new JwtTokenServiceImpl();
 	}
+	
+	@Test
+	public void shouldGenerateValidJwtToken() throws ParseException {
+		String token = serviceUnderTest.generateTokenFor("pepito", "ROLE_USER");
+		assertTrue(isValidJWTString(token));
+	}
 
 	@Test 
  	public void shouldGenerateJwtTokenWithProvidedClaims() throws ParseException {
