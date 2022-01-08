@@ -15,16 +15,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtTokenServiceImpl implements TokenService {
 
 	public String generateTokenFor(String username, String commaSeparatedRoles) {
-		var now = LocalDateTime.now();
 		Map<String, String> customClaims = Map.of(
 				"username", username,
 				"roles", commaSeparatedRoles);
-		Claims claims = Jwts
+		var claims = buildClaims(customClaims);
+		return buildJwtWithClaims(claims);
+	}
+	
+	private Claims buildClaims(final Map<String, String> customClaims) {
+		var now = LocalDateTime.now();
+		var claims = Jwts
 				.claims()
 				.setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
 				.setExpiration(Date.from(now.plusSeconds(60).atZone(ZoneId.systemDefault()).toInstant()));
 		claims.putAll(customClaims);
-		
+		return claims;
+	}
+	
+	private String buildJwtWithClaims(Claims claims) {
 		return Jwts
 				.builder()
 				.setHeaderParam("typ", "JWT")
