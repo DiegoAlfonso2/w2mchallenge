@@ -21,7 +21,7 @@ public class JwtTokenServiceImplTest implements AuthTokenTestHelper {
 	
 	@BeforeEach
 	public void setUp() {
-		this.serviceUnderTest = new JwtTokenServiceImpl();
+		this.serviceUnderTest = new JwtTokenServiceImpl(TEST_EXPIRATION_60_SECONDS, TEST_SECRET);
 	}
 	
 	@Test
