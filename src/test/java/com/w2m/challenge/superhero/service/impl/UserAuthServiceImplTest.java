@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.w2m.challenge.superhero.model.auth.User;
 import com.w2m.challenge.superhero.repository.UserRepository;
+import com.w2m.challenge.superhero.service.TokenService;
 import com.w2m.challenge.superhero.test.helpers.AuthTokenTestHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,27 +30,35 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	private final String USERNAME = "pepito";
 	private final String PASSWORD = "m3g4h4x0r";
 	private final String HASHED_PASSWORD = DigestUtils.sha256Hex(USERNAME + PASSWORD);
+	private final String ROLE_LIST = "ROLE_USER";
+	private final String VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcGl0byIsInJvbGVzIjoiUk9MRV9VU0VSIn0.-G8xKxvmDaOknbDjFuu_8__Sx1la5YsufiSn6H2mGD0";
 	
 	@Mock
 	UserRepository userRepository;
 	
+	@Mock
+	TokenService tokenService;
+	
 	@BeforeEach
 	public void setUp() {
-		serviceUnderTest = new UserAuthServiceImpl(userRepository);
-		var user = new User(USERNAME, HASHED_PASSWORD, "ROLE_USER");
+		serviceUnderTest = new UserAuthServiceImpl(userRepository, tokenService);
+		var user = new User(USERNAME, HASHED_PASSWORD, ROLE_LIST);
 		Mockito.when(userRepository.findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		Mockito.when(tokenService.generateTokenFor(USERNAME, ROLE_LIST)).thenReturn(VALID_TOKEN);
 	}
 
 	@Test
 	public void shouldReturnTokenWithValidCredentials() throws JsonMappingException, JsonProcessingException, ParseException {
 		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
 		assertTrue(isValidJWTString(resultingToken));
+		Mockito.verify(userRepository).findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD);
+		Mockito.verify(tokenService).generateTokenFor(USERNAME, ROLE_LIST);
 	}
 	
 	@Test
 	public void shouldReturnRoleWithProperCredentials() throws Exception {
 		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
-		assertTrue(hasClaim(resultingToken, "username", "pepito"));
-		assertTrue(hasClaim(resultingToken, "roles", "ROLE_USER"));
+		Mockito.verify(userRepository).findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD);
+		Mockito.verify(tokenService).generateTokenFor(USERNAME, ROLE_LIST);
 	}
 }

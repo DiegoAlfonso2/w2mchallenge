@@ -6,11 +6,13 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
+import com.w2m.challenge.superhero.service.TokenService;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-public class JwtTokenServiceImpl {
+public class JwtTokenServiceImpl implements TokenService {
 
 	public String generateTokenFor(String username, String commaSeparatedRoles) {
 		var now = LocalDateTime.now();
