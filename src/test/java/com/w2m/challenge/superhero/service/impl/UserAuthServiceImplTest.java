@@ -36,21 +36,21 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	@BeforeEach
 	public void setUp() {
 		serviceUnderTest = new UserAuthServiceImpl(userRepository, tokenService);
-		var user = new User(USERNAME, HASHED_PASSWORD, ROLE_LIST);
-		Mockito.when(userRepository.findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD)).thenReturn(Optional.of(user));
-		Mockito.when(tokenService.generateTokenFor(USERNAME, ROLE_LIST)).thenReturn(VALID_TOKEN);
+		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
+		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 	}
 
 	@Test
 	public void shouldDelegateOnUserRepositoryToGetUserDetails() throws JsonMappingException, JsonProcessingException, ParseException {
-		serviceUnderTest.authenticate(USERNAME, PASSWORD);
-		Mockito.verify(userRepository).findByUsernameAndHashedPassword(USERNAME, HASHED_PASSWORD);
+		serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
+		Mockito.verify(userRepository).findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD);
 	}
 	
 	@Test
 	public void shouldDelegateOnTokenServiceToGenerateToken() throws Exception {
-		String resultingToken = serviceUnderTest.authenticate(USERNAME, PASSWORD);
-		assertEquals(VALID_TOKEN, resultingToken);
-		Mockito.verify(tokenService).generateTokenFor(USERNAME, ROLE_LIST);
+		String resultingToken = serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
+		assertEquals(TEST_VALID_TOKEN, resultingToken);
+		Mockito.verify(tokenService).generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
 	}
 }

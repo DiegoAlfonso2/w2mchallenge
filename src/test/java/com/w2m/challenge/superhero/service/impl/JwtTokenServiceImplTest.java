@@ -26,14 +26,14 @@ public class JwtTokenServiceImplTest implements AuthTokenTestHelper {
 	
 	@Test
 	public void shouldGenerateValidJwtToken() throws ParseException {
-		String token = serviceUnderTest.generateTokenFor("pepito", "ROLE_USER");
+		String token = serviceUnderTest.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
 		assertTrue(isValidJWTString(token));
 	}
 
 	@Test 
  	public void shouldGenerateJwtTokenWithProvidedClaims() throws ParseException {
-		String token = serviceUnderTest.generateTokenFor("pepito", "ROLE_USER");
-		assertTrue(hasClaim(token, "username", "pepito"));
-		assertTrue(hasClaim(token, "roles", "ROLE_USER"));
+		String token = serviceUnderTest.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
+		assertTrue(hasClaim(token, "username", TEST_USERNAME));
+		assertTrue(hasClaim(token, "roles", TEST_ROLE_LIST));
 	}
 }

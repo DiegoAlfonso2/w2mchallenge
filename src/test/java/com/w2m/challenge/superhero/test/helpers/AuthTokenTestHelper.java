@@ -14,11 +14,11 @@ import com.w2m.challenge.superhero.dto.AuthTokenDTO;
 
 public interface AuthTokenTestHelper {
 	
-	String USERNAME = "pepito";
-	String PASSWORD = "m3g4h4x0r";
-	String HASHED_PASSWORD = DigestUtils.sha256Hex(USERNAME + PASSWORD);
-	String ROLE_LIST = "ROLE_USER";
-	String VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcGl0byIsInJvbGVzIjoiUk9MRV9VU0VSIn0.-G8xKxvmDaOknbDjFuu_8__Sx1la5YsufiSn6H2mGD0";
+	String TEST_USERNAME = "pepito";
+	String TEST_PASSWORD = "m3g4h4x0r";
+	String TEST_HASHED_PASSWORD = DigestUtils.sha256Hex(TEST_USERNAME + TEST_PASSWORD);
+	String TEST_ROLE_LIST = "ROLE_USER";
+	String TEST_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlcGl0byIsInJvbGVzIjoiUk9MRV9VU0VSIn0.-G8xKxvmDaOknbDjFuu_8__Sx1la5YsufiSn6H2mGD0";
 
 
 	default boolean isValidJWTLoginResponse(String responseString) throws JsonMappingException, JsonProcessingException, ParseException {
