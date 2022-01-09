@@ -21,6 +21,7 @@ public class UserAuthController {
 		this.userAuthService = userAuthService;
 	}
 
+	// TODO perform input validation (e.g. username not empty) to avoid hitting the DB
 	@PostMapping(path = "/login", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<AuthTokenDTO> login(@RequestBody UserDTO user) {
 		var token = userAuthService.authenticate(user.getUsername(), user.getPassword());

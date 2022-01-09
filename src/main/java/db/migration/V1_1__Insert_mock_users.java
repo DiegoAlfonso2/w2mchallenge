@@ -7,6 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+/**
+ * This class shouldn't run in production environment. It should be easy to change
+ * using spring profiles, but considered out of the scope of the challenge.
+ * @author diego
+ *
+ */
 public class V1_1__Insert_mock_users extends BaseJavaMigration {
 	
 	@Override
