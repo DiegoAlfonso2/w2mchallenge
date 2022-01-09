@@ -6,12 +6,16 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.w2m.challenge.superhero.service.TokenService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Service
 public class JwtTokenServiceImpl implements TokenService {
 	private static final String USERNAME_CLAIM_KEY = "username";
 	private static final String ROLE_LIST_CLAIM_KEY = "roles";
@@ -19,7 +23,9 @@ public class JwtTokenServiceImpl implements TokenService {
 	private long tokenExpirationInSeconds;
 	private String secret;
 	
-	public JwtTokenServiceImpl(long tokenExpirationInSeconds, String tokenSignatureSecret) {
+	public JwtTokenServiceImpl(
+			@Value("${jwt.expiration.seconds:60}") long tokenExpirationInSeconds, 
+			@Value("${jwt.signing.secret:secret}") String tokenSignatureSecret) {
 		assert(tokenSignatureSecret != null);
 		this.tokenExpirationInSeconds = tokenExpirationInSeconds;
 		this.secret = tokenSignatureSecret;
