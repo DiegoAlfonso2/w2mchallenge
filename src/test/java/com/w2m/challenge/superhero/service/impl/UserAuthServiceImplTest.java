@@ -3,6 +3,7 @@ package com.w2m.challenge.superhero.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,19 +37,22 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	@BeforeEach
 	public void setUp() {
 		serviceUnderTest = new UserAuthServiceImpl(userRepository, tokenService);
-		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
-		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
-		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 	}
 
 	@Test
 	public void shouldDelegateOnUserRepositoryToGetUserDetailsForTokenGeneration() throws JsonMappingException, JsonProcessingException, ParseException {
+		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
+		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 		serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
 		Mockito.verify(userRepository).findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD);
 	}
 	
 	@Test
 	public void shouldDelegateOnTokenServiceToGenerateToken() throws Exception {
+		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
+		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 		String resultingToken = serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
 		assertEquals(TEST_VALID_TOKEN, resultingToken);
 		Mockito.verify(tokenService).generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
@@ -56,8 +60,12 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	
 	@Test
 	public void shouldRetrieveUserAndRolesFromValidToken() throws Exception {
+		Mockito.when(tokenService.getTokenClaims(TEST_VALID_TOKEN)).thenReturn(Map.of(
+				TokenService.USERNAME_CLAIM_KEY, TEST_USERNAME,
+				TokenService.ROLE_LIST_CLAIM_KEY, TEST_ROLE_LIST));
 		var user = serviceUnderTest.getUserDetailsFromToken(TEST_VALID_TOKEN);
 		assertEquals(TEST_USERNAME, user.getUsername());
 		assertEquals(TEST_ROLE_LIST, user.getRoles());
+		Mockito.verify(tokenService).getTokenClaims(TEST_VALID_TOKEN);
 	}
 }

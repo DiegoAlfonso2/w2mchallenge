@@ -17,9 +17,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtTokenServiceImpl implements TokenService {
-	private static final String USERNAME_CLAIM_KEY = "username";
-	private static final String ROLE_LIST_CLAIM_KEY = "roles";
-	
+		
 	private long tokenExpirationInSeconds;
 	private String secret;
 	
@@ -41,6 +39,7 @@ public class JwtTokenServiceImpl implements TokenService {
 	}
 	
 	// TODO test what happens if token body has no claims (as parseClaimsJws will throw an exception in this case)
+	// TODO test what happens if token has invalid signature (as it will throw io.jsonwebtoken.SignatureException)
 	@Override
 	public Map<String, Object> getTokenClaims(String token) {
 		var claims = Jwts
