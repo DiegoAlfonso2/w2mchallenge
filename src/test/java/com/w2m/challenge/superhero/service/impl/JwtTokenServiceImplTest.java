@@ -1,5 +1,6 @@
 package com.w2m.challenge.superhero.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
@@ -35,5 +36,11 @@ public class JwtTokenServiceImplTest implements AuthTokenTestHelper {
 		String token = serviceUnderTest.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
 		assertTrue(hasClaim(token, "username", TEST_USERNAME));
 		assertTrue(hasClaim(token, "roles", TEST_ROLE_LIST));
+	}
+	
+	@Test void shouldGetRightClaimsFromToken() throws ParseException {
+		var claims = serviceUnderTest.getTokenClaims(TEST_VALID_TOKEN);
+		assertEquals(TEST_USERNAME, claims.get("username"));
+		assertEquals(TEST_ROLE_LIST, claims.get("roles"));
 	}
 }

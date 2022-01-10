@@ -31,12 +31,18 @@ public class JwtTokenServiceImpl implements TokenService {
 		this.secret = tokenSignatureSecret;
 	}
 
+	@Override
 	public String generateTokenFor(String username, String commaSeparatedRoles) {
 		Map<String, String> customClaims = Map.of(
 				USERNAME_CLAIM_KEY, username,
 				ROLE_LIST_CLAIM_KEY, commaSeparatedRoles);
 		var claims = buildClaims(customClaims);
 		return buildJwtWithClaims(claims);
+	}
+	
+	@Override
+	public Map<String, Object> getTokenClaims(String token) {
+		return null;
 	}
 	
 	private Claims buildClaims(final Map<String, String> customClaims) {
