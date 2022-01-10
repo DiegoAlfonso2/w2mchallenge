@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.Charset;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,5 +52,29 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 			.andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON_UTF8))
 			.andReturn();
 		assertTrue(isValidJWTLoginResponse(result.getResponse().getContentAsString()));
+	}
+	
+	@Test
+	public void shouldAcceptRequestIfAuthenticated() throws Exception {
+		StringBuilder credentialsBuilder = new StringBuilder();
+		credentialsBuilder.append("{ \n");
+		credentialsBuilder.append("    \"username\": \"pepito\", \n");
+		credentialsBuilder.append("    \"password\": \"m3g4h4x0r\" \n");
+		credentialsBuilder.append("}");
+		MvcResult loginResult = mockMvc
+			.perform(post("/login")
+					.contentType(APPLICATION_JSON_UTF8)
+					.content(credentialsBuilder.toString()))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON_UTF8))
+			.andReturn();
+		var token = new JSONObject(loginResult.getResponse().getContentAsString()).getString("token");
+		mockMvc
+			.perform(get("/heroes")
+					.contentType(APPLICATION_JSON_UTF8)
+					.header("Authorization", "Bearer " + token))
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 }
