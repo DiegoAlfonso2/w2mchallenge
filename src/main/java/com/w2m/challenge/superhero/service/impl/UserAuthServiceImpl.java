@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.w2m.challenge.superhero.model.auth.User;
 import com.w2m.challenge.superhero.repository.UserRepository;
 import com.w2m.challenge.superhero.service.TokenService;
 import com.w2m.challenge.superhero.service.UserAuthService;
@@ -25,6 +26,12 @@ public class UserAuthServiceImpl implements UserAuthService {
 		// TODO don't forget to add negative test cases that will force to refactor the following line
 		var user = userRepository.findByUsernameAndHashedPassword(username, hashedPassword).get();
 		return tokenService.generateTokenFor(user.getUsername(), user.getRoles());
+	}
+
+	@Override
+	public User getUserDetailsFromToken(String token) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
