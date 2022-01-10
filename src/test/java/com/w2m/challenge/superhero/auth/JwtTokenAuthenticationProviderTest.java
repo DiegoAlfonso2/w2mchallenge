@@ -37,8 +37,8 @@ public class JwtTokenAuthenticationProviderTest implements AuthTokenTestHelper {
 	
 	@Test
 	public void shouldRetrieveUserDetailsFromToken() {
-		var authentication = new UsernamePasswordAuthenticationToken(TEST_USERNAME, TEST_VALID_TOKEN);
-		var userDetails = providerUnderTest.retrieveUser(TEST_USERNAME, authentication);
+		var authentication = new UsernamePasswordAuthenticationToken(TEST_VALID_TOKEN, TEST_VALID_TOKEN);
+		var userDetails = providerUnderTest.retrieveUser(TEST_VALID_TOKEN, authentication);
 		assertThat(userDetails.getUsername(), is("pepito"));
 		assertThat(
 				userDetails

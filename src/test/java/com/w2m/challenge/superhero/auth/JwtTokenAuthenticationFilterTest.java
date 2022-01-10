@@ -64,7 +64,7 @@ public class JwtTokenAuthenticationFilterTest implements AuthTokenTestHelper {
 		assertTrue(auth == mockAuthentication);
 		assertInstanceOf(UsernamePasswordAuthenticationToken.class, authCaptor.getValue());
 		UsernamePasswordAuthenticationToken capturedAuth = (UsernamePasswordAuthenticationToken) authCaptor.getValue();
-		assertEquals(TEST_USERNAME, capturedAuth.getPrincipal());
+		assertEquals(TEST_VALID_TOKEN, capturedAuth.getPrincipal());
 		assertEquals(TEST_VALID_TOKEN, capturedAuth.getCredentials());
 	}
 	
