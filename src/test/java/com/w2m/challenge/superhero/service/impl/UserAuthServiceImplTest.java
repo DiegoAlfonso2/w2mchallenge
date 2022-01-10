@@ -42,7 +42,7 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	}
 
 	@Test
-	public void shouldDelegateOnUserRepositoryToGetUserDetails() throws JsonMappingException, JsonProcessingException, ParseException {
+	public void shouldDelegateOnUserRepositoryToGetUserDetailsForTokenGeneration() throws JsonMappingException, JsonProcessingException, ParseException {
 		serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
 		Mockito.verify(userRepository).findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD);
 	}
@@ -52,5 +52,12 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 		String resultingToken = serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
 		assertEquals(TEST_VALID_TOKEN, resultingToken);
 		Mockito.verify(tokenService).generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
+	}
+	
+	@Test
+	public void shouldRetrieveUserAndRolesFromValidToken() throws Exception {
+		var user = serviceUnderTest.getUserDetailsFromToken(TEST_VALID_TOKEN);
+		assertEquals(TEST_USERNAME, user.getUsername());
+		assertEquals(TEST_ROLE_LIST, user.getRoles());
 	}
 }
