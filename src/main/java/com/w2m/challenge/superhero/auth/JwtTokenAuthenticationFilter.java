@@ -20,7 +20,7 @@ public class JwtTokenAuthenticationFilter extends AbstractAuthenticationProcessi
 	private final static String AUTHORIZATION_HEADER = "Authorization";
 	private final static String TOKEN_PREFIX = "Bearer ";
 	
-	protected JwtTokenAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher,
+	public JwtTokenAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher,
 			AuthenticationManager authenticationManager) {
 		super(requiresAuthenticationRequestMatcher, authenticationManager);
 	}

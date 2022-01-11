@@ -7,9 +7,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import com.w2m.challenge.superhero.service.UserAuthService;
 
+@Component
 public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 	
 	private UserAuthService userAuthService;

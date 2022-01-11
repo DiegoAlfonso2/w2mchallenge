@@ -2,7 +2,6 @@ package com.w2m.challenge.superhero.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -65,12 +64,8 @@ public class JwtTokenServiceImpl implements TokenService {
 				.builder()
 				.setHeaderParam("typ", "JWT")
 				.setClaims(claims)
-				.signWith(SignatureAlgorithm.HS256, getBase64Secret())
+				.signWith(SignatureAlgorithm.HS256, secret.getBytes())
 				.compact();
-	}
-	
-	private byte[] getBase64Secret() {
-		return Base64.getEncoder().encode(secret.getBytes());
 	}
 	
 	// Maybe the following method is not a good fit for this class, neither is it worth to create a whole
