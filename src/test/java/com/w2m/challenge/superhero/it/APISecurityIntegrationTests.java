@@ -120,6 +120,23 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				.andDo(print())
 				.andExpect(status().isUnauthorized());
 	}
+
+	@Test
+	public void shouldReturnUnauthorizedWithATokenWithInvalidSignature() throws Exception {
+		var now = LocalDateTime.now();
+		var token = buildTestJwt(
+				"other_secret_different_from_the_one_used_to_sign_legitimate_tokens", 
+				now, 
+				now.plusSeconds(TEST_EXPIRATION_60_SECONDS),
+				TEST_USERNAME,
+				TEST_ROLE_LIST);
+		mockMvc
+				.perform(get("/heroes")
+						.contentType(APPLICATION_JSON_UTF8)
+						.header("Authorization", "Bearer " + token))
+				.andDo(print())
+				.andExpect(status().isUnauthorized());
+	}
 	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {
 		Map<String, String> elements = new HashMap<String, String>();
