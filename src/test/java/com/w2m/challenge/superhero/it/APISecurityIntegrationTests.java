@@ -93,6 +93,16 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				.andExpect(status().isBadRequest());
 	}
 	
+	@Test
+	public void shouldReturnUnauthorizedWithWrongCredentials() throws Exception {
+		mockMvc
+		.perform(post("/login")
+				.contentType(APPLICATION_JSON_UTF8)
+				.content(createJsonForLogin(Optional.of("wrong_username"), Optional.of("wr0ngp455"))))
+		.andDo(print())
+		.andExpect(status().isUnauthorized());
+	}
+	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {
 		Map<String, String> elements = new HashMap<String, String>();
 		if (username.isPresent())
