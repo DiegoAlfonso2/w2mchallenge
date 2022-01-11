@@ -15,6 +15,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 
 @Service
 public class JwtTokenServiceImpl implements TokenService {
@@ -40,7 +41,6 @@ public class JwtTokenServiceImpl implements TokenService {
 	}
 	
 	// TODO test what happens if token body has no claims (as parseClaimsJws will throw an exception in this case)
-	// TODO test what happens if token has invalid signature (as it will throw io.jsonwebtoken.SignatureException)
 	@Override
 	public Map<String, Object> getTokenClaims(String token) {
 		try {
@@ -52,6 +52,8 @@ public class JwtTokenServiceImpl implements TokenService {
 			return Map.copyOf(claims);
 		} catch (ExpiredJwtException eje) {
 			throw new BadCredentialsException("Token is expired", eje);
+		} catch (SignatureException se) {
+			throw new BadCredentialsException("Apocryphal token: invalid signature", se);
 		}
 	}
 	
