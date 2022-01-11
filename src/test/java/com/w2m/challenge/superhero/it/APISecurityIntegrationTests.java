@@ -80,8 +80,7 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 						.contentType(APPLICATION_JSON_UTF8)
 						.content(createJsonForLogin(Optional.empty(), Optional.of(TEST_PASSWORD))))
 				.andDo(print())
-				.andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON_UTF8));
+				.andExpect(status().isBadRequest());
 	}
 	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {
