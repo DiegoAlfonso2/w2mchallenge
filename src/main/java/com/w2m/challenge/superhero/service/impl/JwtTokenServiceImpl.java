@@ -6,11 +6,13 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import com.w2m.challenge.superhero.service.TokenService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -41,12 +43,16 @@ public class JwtTokenServiceImpl implements TokenService {
 	// TODO test what happens if token has invalid signature (as it will throw io.jsonwebtoken.SignatureException)
 	@Override
 	public Map<String, Object> getTokenClaims(String token) {
-		var claims = Jwts
-				.parser()
-				.setSigningKey(secret.getBytes())
-				.parseClaimsJws(token)
-				.getBody();
-		return Map.copyOf(claims);
+		try {
+			var claims = Jwts
+					.parser()
+					.setSigningKey(secret.getBytes())
+					.parseClaimsJws(token)
+					.getBody();
+			return Map.copyOf(claims);
+		} catch (ExpiredJwtException eje) {
+			throw new BadCredentialsException("Token is expired", eje);
+		}
 	}
 	
 	private Claims buildClaims(final Map<String, String> customClaims) {
