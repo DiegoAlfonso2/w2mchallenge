@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,7 +43,6 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 	
 	@Test
 	public void shouldReturnLoginTokenWithRightCredentials() throws Exception {
-		
 		MvcResult result = mockMvc
 			.perform(post("/login")
 					.contentType(APPLICATION_JSON_UTF8)
@@ -73,6 +71,17 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 					.header("Authorization", "Bearer " + token))
 			.andDo(print())
 			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void shouldReturnBadRequestIfLoginLacksUsername() throws Exception {
+		mockMvc
+				.perform(post("/login")
+						.contentType(APPLICATION_JSON_UTF8)
+						.content(createJsonForLogin(Optional.empty(), Optional.of(TEST_PASSWORD))))
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON_UTF8));
 	}
 	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {
