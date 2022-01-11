@@ -83,6 +83,16 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				.andExpect(status().isBadRequest());
 	}
 	
+	@Test
+	public void shouldReturnBadRequestIfLoginLacksPassword() throws Exception {
+		mockMvc
+				.perform(post("/login")
+						.contentType(APPLICATION_JSON_UTF8)
+						.content(createJsonForLogin(Optional.of(TEST_USERNAME), Optional.empty())))
+				.andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {
 		Map<String, String> elements = new HashMap<String, String>();
 		if (username.isPresent())
