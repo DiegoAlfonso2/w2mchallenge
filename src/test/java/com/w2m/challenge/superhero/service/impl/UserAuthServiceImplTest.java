@@ -1,6 +1,11 @@
 package com.w2m.challenge.superhero.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -12,8 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -42,30 +47,39 @@ public class UserAuthServiceImplTest implements AuthTokenTestHelper {
 	@Test
 	public void shouldDelegateOnUserRepositoryToGetUserDetailsForTokenGeneration() throws JsonMappingException, JsonProcessingException, ParseException {
 		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
-		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
-		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
+		when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 		serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
-		Mockito.verify(userRepository).findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD);
+		verify(userRepository).findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD);
 	}
 	
 	@Test
 	public void shouldDelegateOnTokenServiceToGenerateToken() throws Exception {
 		var user = new User(TEST_USERNAME, TEST_HASHED_PASSWORD, TEST_ROLE_LIST);
-		Mockito.when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
-		Mockito.when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
+		when(userRepository.findByUsernameAndHashedPassword(TEST_USERNAME, TEST_HASHED_PASSWORD)).thenReturn(Optional.of(user));
+		when(tokenService.generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST)).thenReturn(TEST_VALID_TOKEN);
 		String resultingToken = serviceUnderTest.authenticate(TEST_USERNAME, TEST_PASSWORD);
 		assertEquals(TEST_VALID_TOKEN, resultingToken);
-		Mockito.verify(tokenService).generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
+		verify(tokenService).generateTokenFor(TEST_USERNAME, TEST_ROLE_LIST);
 	}
 	
 	@Test
 	public void shouldRetrieveUserAndRolesFromValidToken() throws Exception {
-		Mockito.when(tokenService.getTokenClaims(TEST_VALID_TOKEN)).thenReturn(Map.of(
+		when(tokenService.getTokenClaims(TEST_VALID_TOKEN)).thenReturn(Map.of(
 				TokenService.USERNAME_CLAIM_KEY, TEST_USERNAME,
 				TokenService.ROLE_LIST_CLAIM_KEY, TEST_ROLE_LIST));
 		var user = serviceUnderTest.getUserDetailsFromToken(TEST_VALID_TOKEN);
 		assertEquals(TEST_USERNAME, user.getUsername());
 		assertEquals(TEST_ROLE_LIST, user.getRoles());
-		Mockito.verify(tokenService).getTokenClaims(TEST_VALID_TOKEN);
+		verify(tokenService).getTokenClaims(TEST_VALID_TOKEN);
+	}
+	
+	@Test
+	public void shouldThrowBadCredentialsIfUserAndPasswordDontExist() {
+		when(userRepository.findByUsernameAndHashedPassword(anyString(), anyString())).thenReturn(Optional.empty());
+		assertThrows(BadCredentialsException.class, () -> {
+			serviceUnderTest.authenticate("wrong_username", "bad_password");
+		});
+		verify(tokenService, never()).generateTokenFor(anyString(), anyString());
 	}
 }
