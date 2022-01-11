@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import com.w2m.challenge.superhero.model.auth.User;
@@ -25,8 +26,14 @@ public class UserAuthServiceImpl implements UserAuthService {
 
 	public String authenticate(String username, String password) {
 		var hashedPassword = DigestUtils.sha256Hex(username + password);
-		// TODO don't forget to add negative test cases that will force to refactor the following line
-		var user = userRepository.findByUsernameAndHashedPassword(username, hashedPassword).get();
+		var user = userRepository
+				.findByUsernameAndHashedPassword(username, hashedPassword)
+				// Tradeoff: using BadCredentialsException adds coupling to Spring Security Framework
+				// On the other hand, making a custom exception for this forces me to handle two different kind
+				// of exceptions, since auth filter requires a subclass of AuthenticationException to be thrown.
+				// In a project this size, with a low probability to change security framework, it isn't worth 
+				// to be so nitpicky.
+				.orElseThrow(() -> new BadCredentialsException("Invalid username / password"));
 		return tokenService.generateTokenFor(user.getUsername(), user.getRoles());
 	}
 
