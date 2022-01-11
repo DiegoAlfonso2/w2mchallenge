@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -101,6 +102,23 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				.content(createJsonForLogin(Optional.of("wrong_username"), Optional.of("wr0ngp455"))))
 		.andDo(print())
 		.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	public void shouldReturnUnauthorizedWithAnExpiredToken() throws Exception {
+		var aDayAgo = LocalDateTime.now().minusDays(1L);
+		var token = buildTestJwt(
+				"please_change_this_default_secret_via_env_variable_since_this_is_insecure", 
+				aDayAgo, 
+				aDayAgo.plusSeconds(TEST_EXPIRATION_60_SECONDS),
+				TEST_USERNAME,
+				TEST_ROLE_LIST);
+		mockMvc
+				.perform(get("/heroes")
+						.contentType(APPLICATION_JSON_UTF8)
+						.header("Authorization", "Bearer " + token))
+				.andDo(print())
+				.andExpect(status().isUnauthorized());
 	}
 	
 	private String createJsonForLogin(Optional<String> username, Optional<String> password) throws JsonProcessingException {

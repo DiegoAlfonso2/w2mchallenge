@@ -1,7 +1,11 @@
 package com.w2m.challenge.superhero.test.helpers;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -9,7 +13,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.w2m.challenge.superhero.dto.AuthTokenDTO;
 
 public interface AuthTokenTestHelper {
@@ -49,4 +59,19 @@ public interface AuthTokenTestHelper {
 		AuthTokenDTO responseDTO = om.readValue(jsonString, AuthTokenDTO.class);
 		return responseDTO.getToken();
 	}
+	
+	default String buildTestJwt(String secret, LocalDateTime issuedAt, LocalDateTime expiration, String username, String roles) throws Exception {
+		Function<LocalDateTime, Date> localDateTimeToDate = (LocalDateTime time) -> Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.issueTime(localDateTimeToDate.apply(issuedAt))
+				.expirationTime(localDateTimeToDate.apply(expiration))
+				.claim("roles", roles)
+				.claim("username", username)
+				.build();
+		JWSSigner signer = new MACSigner(secret.getBytes());
+		SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256, JOSEObjectType.JWT, null, null, null, null, null, null, null, null, null, true, null, null), claims);
+		signedJWT.sign(signer);
+		return signedJWT.serialize();
+	}
+
 }
