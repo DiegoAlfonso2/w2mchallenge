@@ -60,14 +60,22 @@ public interface AuthTokenTestHelper {
 		return responseDTO.getToken();
 	}
 	
-	default String buildTestJwt(String secret, LocalDateTime issuedAt, LocalDateTime expiration, String username, String roles) throws Exception {
+	default String buildTestJwt(String secret, LocalDateTime issuedAt, LocalDateTime expiration, Optional<String> username, Optional<String> roles) throws Exception {
 		Function<LocalDateTime, Date> localDateTimeToDate = (LocalDateTime time) -> Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
-		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+		
+		JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
 				.issueTime(localDateTimeToDate.apply(issuedAt))
-				.expirationTime(localDateTimeToDate.apply(expiration))
-				.claim("roles", roles)
-				.claim("username", username)
-				.build();
+				.expirationTime(localDateTimeToDate.apply(expiration));
+
+		if (roles.isPresent()) {
+			claimsBuilder = claimsBuilder.claim("roles", roles.get());
+		}
+		
+		if (username.isPresent()) {
+			claimsBuilder = claimsBuilder.claim("username", username.get());
+		}
+		var claims = claimsBuilder.build();
+		
 		JWSSigner signer = new MACSigner(secret.getBytes());
 		SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256, JOSEObjectType.JWT, null, null, null, null, null, null, null, null, null, true, null, null), claims);
 		signedJWT.sign(signer);

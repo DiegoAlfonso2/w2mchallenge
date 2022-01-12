@@ -111,8 +111,8 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				"please_change_this_default_secret_via_env_variable_since_this_is_insecure", 
 				aDayAgo, 
 				aDayAgo.plusSeconds(TEST_EXPIRATION_60_SECONDS),
-				TEST_USERNAME,
-				TEST_ROLE_LIST);
+				Optional.of(TEST_USERNAME),
+				Optional.of(TEST_ROLE_LIST));
 		mockMvc
 				.perform(get("/heroes")
 						.contentType(APPLICATION_JSON_UTF8)
@@ -128,8 +128,25 @@ public class APISecurityIntegrationTests implements AuthTokenTestHelper {
 				"other_secret_different_from_the_one_used_to_sign_legitimate_tokens", 
 				now, 
 				now.plusSeconds(TEST_EXPIRATION_60_SECONDS),
-				TEST_USERNAME,
-				TEST_ROLE_LIST);
+				Optional.of(TEST_USERNAME),
+				Optional.of(TEST_ROLE_LIST));
+		mockMvc
+				.perform(get("/heroes")
+						.contentType(APPLICATION_JSON_UTF8)
+						.header("Authorization", "Bearer " + token))
+				.andDo(print())
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void shouldReturnUnauthorizedWithAMalformedToken() throws Exception {
+		var now = LocalDateTime.now();
+		var token = buildTestJwt(
+				"other_secret_different_from_the_one_used_to_sign_legitimate_tokens",
+				now,
+				now.plusSeconds(TEST_EXPIRATION_60_SECONDS),
+				Optional.empty(),
+				Optional.empty());
 		mockMvc
 				.perform(get("/heroes")
 						.contentType(APPLICATION_JSON_UTF8)
