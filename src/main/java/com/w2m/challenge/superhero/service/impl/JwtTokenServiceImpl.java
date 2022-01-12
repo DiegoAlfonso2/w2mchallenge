@@ -54,6 +54,8 @@ public class JwtTokenServiceImpl implements TokenService {
 			throw new BadCredentialsException("Token is expired", eje);
 		} catch (SignatureException se) {
 			throw new BadCredentialsException("Apocryphal token: invalid signature", se);
+		} catch (Exception e) {
+			throw new BadCredentialsException("Error parsing JWT", e);
 		}
 	}
 	
