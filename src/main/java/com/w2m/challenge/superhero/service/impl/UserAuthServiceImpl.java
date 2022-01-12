@@ -47,11 +47,11 @@ public class UserAuthServiceImpl implements UserAuthService {
 		user.setUsername(
 				Optional.ofNullable(claims.get(TokenService.USERNAME_CLAIM_KEY))
 				.map(String::valueOf)
-				.orElseThrow());
+				.orElseThrow(() -> new BadCredentialsException("Username not provided in JWT")));
 		user.setRoles(
 				Optional.ofNullable(claims.get(TokenService.ROLE_LIST_CLAIM_KEY))
 				.map(String::valueOf)
-				.orElseThrow());
+				.orElseThrow(() -> new BadCredentialsException("Roles not provided in JWT")));
 		return user;
 	}
 

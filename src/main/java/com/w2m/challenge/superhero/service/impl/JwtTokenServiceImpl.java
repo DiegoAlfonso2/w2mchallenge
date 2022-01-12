@@ -40,7 +40,6 @@ public class JwtTokenServiceImpl implements TokenService {
 		return buildJwtWithClaims(claims);
 	}
 	
-	// TODO test what happens if token body has no claims (as parseClaimsJws will throw an exception in this case)
 	@Override
 	public Map<String, Object> getTokenClaims(String token) {
 		try {
